@@ -1,12 +1,23 @@
-FROM ghcr.io/astral-sh/uv:python3.13-alpine AS base
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+
+RUN apt update && \
+    apt install --no-install-recommends -y build-essential gcc && \
+    apt clean && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
 
 COPY uv.lock uv.lock
 COPY pyproject.toml pyproject.toml
+COPY README.md README.md
 
-RUN uv sync --frozen --no-install-project
+ENV UV_LINK_MODE=copy
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --no-install-project
 
-COPY src src/
 
-RUN uv sync --frozen
+COPY src/ src/
 
-ENTRYPOINT ["uv", "run", "src/clickbait_classifier/train.py"]
+RUN uv sync --locked
+
+ENTRYPOINT ["python", "-u", "src/clickbait_classifier/train.py"]
+
+
