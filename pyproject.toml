@@ -15,12 +15,13 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "fastapi>=0.128.0",
+    "hydra-core>=1.3.2",
     "pandas>=2.3.3",
     "torch>=2.9.1",
     "transformers>=4.57.3",
     "typer>=0.21.1",
-    "fastapi",
-    "uvicorn"
+    "uvicorn>=0.40.0",
 ]
 
 [dependency-groups]
@@ -41,3 +42,8 @@ omit = ["tests/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[project.scripts]
+train = "clickbait_classifier.train:app"
+preprocess = "clickbait_classifier.data:app"
+model = "clickbait_classifier.model:app"

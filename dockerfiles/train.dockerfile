@@ -6,17 +6,22 @@ RUN apt update && \
 
 WORKDIR /app
 
+ENV PYTHONPATH=/app/src
+ENV UV_LINK_MODE=copy
+
 COPY uv.lock uv.lock
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
 
-ENV UV_LINK_MODE=copy
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --no-install-project
 
 
 COPY src/ src/
 
-RUN uv sync --locked
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked
+
 
 ENTRYPOINT ["python", "-u", "src/clickbait_classifier/train.py"]
 

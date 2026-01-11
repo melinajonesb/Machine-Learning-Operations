@@ -1,17 +1,18 @@
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
+ENV PYTHONPATH=/app/src
+ENV UV_LINK_MODE=copy
 
-COPY uv.lock uv.lock
 COPY pyproject.toml pyproject.toml
+COPY uv.lock uv.lock
 COPY README.md README.md
 
-ENV UV_LINK_MODE=copy
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --no-install-project
-
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-install-project
 
 COPY src/ src/
-RUN uv sync --locked
 
-ENTRYPOINT ["uv", "run", "uvicorn", "src.clickbait_classifier.api:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8000
 
+ENTRYPOINT ["uv", "run", "uvicorn", "clickbait_classifier.api:app", "--host", "0.0.0.0", "--port", "8000"]
