@@ -1,4 +1,3 @@
-import logging
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -6,18 +5,12 @@ import pandas as pd
 import torch
 import typer
 from hydra import compose, initialize_config_dir
+from loguru import logger
 from omegaconf import OmegaConf
 from torch.utils.data import Dataset, TensorDataset
 from transformers import AutoTokenizer
 
 app = typer.Typer()
-log = logging.getLogger(__name__)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 
 class ClickbaitDataset(Dataset):
@@ -44,8 +37,10 @@ def _load_config(config_path: Optional[Path]) -> OmegaConf:
     config_dir = config_path.parent
     config_name = config_path.stem
 
+    logger.debug(f"Loading configuration from {config_path}")
     with initialize_config_dir(config_dir=str(config_dir), version_base=None):
         cfg = compose(config_name=config_name)
+    logger.debug("Configuration loaded successfully")
     return cfg
 
 
@@ -53,9 +48,11 @@ def load_data(
     processed_path: Path = Path("data/processed"),
 ) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
     """Load preprocessed train, val, and test sets."""
+    logger.info(f"Loading processed data from {processed_path}")
     train_data = torch.load(processed_path / "train.pt")
     val_data = torch.load(processed_path / "val.pt")
     test_data = torch.load(processed_path / "test.pt")
+    logger.info(f"Loaded train: {train_data['input_ids'].shape[0]} samples, val: {val_data['input_ids'].shape[0]} samples, test: {test_data['input_ids'].shape[0]} samples")
 
     train_set = TensorDataset(
         train_data["input_ids"],
@@ -133,10 +130,10 @@ def preprocess(
     val_split = cfg.data.val_split
     random_state = cfg.data.random_state
 
-    log.info(f"Loading data from {raw_path}")
+    logger.info(f"Loading data from {raw_path}")
     df = pd.read_csv(raw_path)
-    log.info(f"Loaded {len(df)} samples")
-    log.info(f"Clickbait: {df['clickbait'].sum()}, Non-clickbait: {(df['clickbait'] == 0).sum()}")
+    logger.info(f"Loaded {len(df)} samples")
+    logger.info(f"Clickbait: {df['clickbait'].sum()}, Non-clickbait: {(df['clickbait'] == 0).sum()}")
 
     # Shuffle the data
     df = df.sample(frac=1, random_state=random_state).reset_index(drop=True)
@@ -150,10 +147,10 @@ def preprocess(
     val_df = df[train_end:val_end]
     test_df = df[val_end:]
 
-    log.info(f"Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
+    logger.info(f"Train: {len(train_df)}, Val: {len(val_df)}, Test: {len(test_df)}")
 
     # Tokenize
-    log.info(f"Tokenizing with {model_name}...")
+    logger.info(f"Tokenizing with {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     output_path.mkdir(parents=True, exist_ok=True)
@@ -174,7 +171,7 @@ def preprocess(
         }
 
         torch.save(data, output_path / f"{split_name}.pt")
-        log.info(f"Saved {split_name}.pt with shape {encodings['input_ids'].shape}")
+        logger.info(f"Saved {split_name}.pt with shape {encodings['input_ids'].shape}")
 
 
 if __name__ == "__main__":

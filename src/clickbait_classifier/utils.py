@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from loguru import logger
 from omegaconf import OmegaConf
 
 
@@ -13,5 +14,7 @@ def save_config(cfg: OmegaConf, output_path: Path) -> None:
         cfg: OmegaConf configuration object
         output_path: Path where the config should be saved
     """
+    logger.debug(f"Saving configuration to {output_path}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     OmegaConf.save(cfg, output_path)
+    logger.debug(f"Configuration saved successfully")

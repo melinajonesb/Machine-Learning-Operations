@@ -1,4 +1,3 @@
-import logging
 import random
 from pathlib import Path
 from typing import Annotated, Optional
@@ -7,6 +6,7 @@ import numpy as np
 import torch
 import typer
 from hydra import compose, initialize_config_dir
+from loguru import logger
 from omegaconf import OmegaConf
 from torch import nn
 from torch.utils.data import DataLoader
@@ -16,13 +16,6 @@ from clickbait_classifier.model import ClickbaitClassifier
 from clickbait_classifier.utils import save_config
 
 app = typer.Typer()
-log = logging.getLogger(__name__)
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 
 def _set_seed(seed: int) -> None:
@@ -45,8 +38,10 @@ def _load_config(config_path: Optional[Path]) -> OmegaConf:
     config_dir = config_path.parent
     config_name = config_path.stem
 
+    logger.debug(f"Loading configuration from {config_path}")
     with initialize_config_dir(config_dir=str(config_dir), version_base=None):
         cfg = compose(config_name=config_name)
+    logger.debug("Configuration loaded successfully")
     return cfg
 
 
@@ -102,14 +97,14 @@ def train(
     # Set seed for reproducibility
     seed = cfg.training.seed
     _set_seed(seed)
-    log.info(f"Set random seed to {seed}")
+    logger.info(f"Set random seed to {seed}")
 
     # Set device
     device_str = cfg.training.device
     if device_str == "auto":
         device_str = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
     device = torch.device(device_str)
-    log.info(f"Using device: {device}")
+    logger.info(f"Using device: {device}")
 
     # Load data
     processed_path = Path(cfg.data.processed_path)
@@ -121,19 +116,21 @@ def train(
     )
     val_loader = DataLoader(val_set, batch_size=cfg.training.batch_size)
 
-    log.info(f"Train: {len(train_set)}, Val: {len(val_set)}, Test: {len(test_set)}")
-    log.info(
+    logger.info(f"Train: {len(train_set)}, Val: {len(val_set)}, Test: {len(test_set)}")
+    logger.info(
         f"Number of epochs: {cfg.training.epochs}, "
         f"Batch size: {cfg.training.batch_size}, "
         f"Learning rate: {cfg.training.lr}"
     )
 
     # Model
+    logger.info(f"Initializing model: {cfg.model.model_name}")
     model = ClickbaitClassifier(
         model_name=cfg.model.model_name,
         num_labels=cfg.model.num_labels,
         dropout=cfg.model.dropout,
     ).to(device)
+    logger.info("Model initialized and moved to device")
 
     # Optimizer - use Hydra instantiate if _target_ is present, otherwise fallback
     if hasattr(cfg.training.optimizer, "_target_"):
@@ -190,18 +187,18 @@ def train(
                 total += labels.size(0)
 
         val_acc = correct / total
-        log.info(f"Epoch {epoch + 1}/{cfg.training.epochs} - Loss: {avg_loss:.4f} - Val Acc: {val_acc:.4f}")
+        logger.info(f"Epoch {epoch + 1}/{cfg.training.epochs} - Loss: {avg_loss:.4f} - Val Acc: {val_acc:.4f}")
 
     # Save model
     output_path = Path(cfg.paths.model_output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(model.state_dict(), output_path)
-    log.info(f"Model saved to {output_path}")
+    logger.info(f"Model saved to {output_path}")
 
     # Save config alongside model
     config_output_path = output_path.parent / "config.yaml"
     save_config(cfg, config_output_path)
-    log.info(f"Configuration saved to {config_output_path}")
+    logger.info(f"Configuration saved to {config_output_path}")
 
 
 if __name__ == "__main__":

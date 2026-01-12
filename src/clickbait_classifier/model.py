@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 import torch
 import typer
 from hydra import compose, initialize_config_dir
+from loguru import logger
 from omegaconf import OmegaConf
 from torch import nn
 from transformers import AutoModel
@@ -44,9 +45,11 @@ class ClickbaitClassifier(nn.Module):
             num_labels = num_labels or 2
             dropout = dropout if dropout is not None else 0.1
 
+        logger.info(f"Loading pretrained model: {model_name}")
         self.transformer = AutoModel.from_pretrained(model_name)
         self.dropout = nn.Dropout(dropout)
         self.classifier = nn.Linear(self.transformer.config.hidden_size, num_labels)
+        logger.debug(f"Model initialized with {num_labels} labels and dropout={dropout}")
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         outputs = self.transformer(input_ids=input_ids, attention_mask=attention_mask)
