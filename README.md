@@ -88,7 +88,6 @@ Run training with profiling enabled. This profiles only the first batch of the f
 uv run python src/clickbait_classifier/train.py --profile
 ```
 
-
 ## Pre-commits
 Pre-commit runs automatic checks (formatting, linting, config validation) before each commit.
 Commits are blocked if checks fail.
@@ -96,7 +95,7 @@ Commits are blocked if checks fail.
 
 ### Run all hooks:
 ```bash
-pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ### Skip hooks:
