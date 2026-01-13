@@ -57,7 +57,7 @@ def train(
 
             optimizer.zero_grad()
 
-            if profile_run and i == 0 and epoch == 0:
+            if profile_run and i == 10 and epoch == 0:
                 activities = [torch.profiler.ProfilerActivity.CPU]
                 if device == "cuda":
                     activities.append(torch.profiler.ProfilerActivity.CUDA)

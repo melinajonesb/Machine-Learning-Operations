@@ -27,8 +27,6 @@ Model candidates include `distilbert-base-uncased` (fast, good enough), `bert-ba
 We'll track experiments in W&B and let the results guide our final choice. The priority is getting the pipeline working end-to-end, not squeezing out the last percentage of accuracy.
 
 
-# How to run
-
 ## Docker
 
 This project uses Docker and Docker Compose to run the training and API
@@ -62,8 +60,6 @@ docker compose up api
 ```bash
 docker compose down
 ```
-
-
 
 ## Profiling
 Run training with profiling enabled. This profiles only the first batch of the first epoch.
