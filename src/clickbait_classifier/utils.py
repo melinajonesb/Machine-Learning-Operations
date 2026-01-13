@@ -17,4 +17,4 @@ def save_config(cfg: OmegaConf, output_path: Path) -> None:
     logger.debug(f"Saving configuration to {output_path}")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     OmegaConf.save(cfg, output_path)
-    logger.debug(f"Configuration saved successfully")
+    logger.debug("Configuration saved successfully")

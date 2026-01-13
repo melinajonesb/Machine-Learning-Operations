@@ -1,9 +1,8 @@
+import clickbait_classifier.model as model_module
 import pytest
 import torch
-from torch import nn
-
 from clickbait_classifier.model import ClickbaitClassifier
-import clickbait_classifier.model as model_module
+from torch import nn
 
 
 class DummyTransformer(nn.Module):
@@ -13,9 +12,9 @@ class DummyTransformer(nn.Module):
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor):
         # Simuler last_hidden_state: [B, L, H]
-        b, l = input_ids.shape
+        batch_size, seq_len = input_ids.shape
         h = self.config.hidden_size
-        last_hidden_state = torch.randn(b, l, h)
+        last_hidden_state = torch.randn(batch_size, seq_len, h)
         return type("out", (), {"last_hidden_state": last_hidden_state})()
 
 

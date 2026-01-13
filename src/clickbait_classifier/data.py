@@ -52,7 +52,10 @@ def load_data(
     train_data = torch.load(processed_path / "train.pt")
     val_data = torch.load(processed_path / "val.pt")
     test_data = torch.load(processed_path / "test.pt")
-    logger.info(f"Loaded train: {train_data['input_ids'].shape[0]} samples, val: {val_data['input_ids'].shape[0]} samples, test: {test_data['input_ids'].shape[0]} samples")
+    logger.info(
+        f"Loaded train: {train_data['input_ids'].shape[0]} samples, val: {val_data['input_ids'].shape[0]} samples, "
+        f"test: {test_data['input_ids'].shape[0]} samples"
+    )
 
     train_set = TensorDataset(
         train_data["input_ids"],

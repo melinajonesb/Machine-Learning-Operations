@@ -1,15 +1,15 @@
-from types import SimpleNamespace
 from pathlib import Path
+from types import SimpleNamespace
 
+import clickbait_classifier.train as train_module
 import torch
 from torch import nn
 from torch.utils.data import TensorDataset
 
-import clickbait_classifier.train as train_module
-
 
 class DummyModel(nn.Module):
     """Small model that aligns with the signature model(input_ids, attention_mask)."""
+
     def __init__(self, num_labels: int = 2):
         super().__init__()
         self.classifier = nn.Linear(1, num_labels)
@@ -33,17 +33,17 @@ def _dummy_cfg(tmp_path: Path):
             lr=1e-3,
             shuffle=False,
             optimizer=SimpleNamespace(),  # no _target_, so default optimizer is used
-            loss=SimpleNamespace(),       # no _target_, so default loss is used
+            loss=SimpleNamespace(),  # no _target_, so default loss is used
         ),
         paths=SimpleNamespace(model_output=str(tmp_path / "models" / "clickbait_model.pt")),
     )
 
 
 def _dummy_datasets():
-    N, L = 8, 16
-    input_ids = torch.randint(0, 1000, (N, L), dtype=torch.long)
-    attention_mask = torch.ones((N, L), dtype=torch.long)
-    labels = torch.randint(0, 2, (N,), dtype=torch.long)
+    num_samples, seq_len = 8, 16
+    input_ids = torch.randint(0, 1000, (num_samples, seq_len), dtype=torch.long)
+    attention_mask = torch.ones((num_samples, seq_len), dtype=torch.long)
+    labels = torch.randint(0, 2, (num_samples,), dtype=torch.long)
 
     ds = TensorDataset(input_ids, attention_mask, labels)
     # train/val/test can be the same for the test
@@ -82,4 +82,6 @@ def test_train_runs_and_saves_model_and_config(monkeypatch, tmp_path):
 
     # Check that we tried to save model and config where cfg says
     assert saved["model_path"] == Path(cfg.paths.model_output), "Model was not saved to expected path"
-    assert saved["config_path"] == Path(cfg.paths.model_output).parent / "config.yaml", "Config was not saved next to model"
+    assert (
+        saved["config_path"] == Path(cfg.paths.model_output).parent / "config.yaml"
+    ), "Config was not saved next to model"

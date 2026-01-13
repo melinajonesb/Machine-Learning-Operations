@@ -4,6 +4,7 @@ from typing import Annotated, Optional
 
 import numpy as np
 import torch
+import torch.profiler
 import typer
 import wandb
 from hydra import compose, initialize_config_dir
@@ -11,7 +12,6 @@ from loguru import logger
 from omegaconf import OmegaConf
 from torch import nn
 from torch.utils.data import DataLoader
-import torch.profiler
 
 from clickbait_classifier.data import load_data
 from clickbait_classifier.load_from_env_file import api_key
@@ -78,8 +78,7 @@ def train(
         Optional[Path],
         typer.Option("--output", "-o", help="Model output path (overrides config)"),
     ] = None,
-    profile_run: Annotated[bool, typer.Option("--profile", "-p", help="Run torch profiler")
-    ] = False,
+    profile_run: Annotated[bool, typer.Option("--profile", "-p", help="Run torch profiler")] = False,
 ) -> None:
     """Train the clickbait classifier."""
     # Load configuration
@@ -206,7 +205,7 @@ def train(
                     activities.append(torch.profiler.ProfilerActivity.CUDA)
 
                 with torch.profiler.profile(
-                    activities = activities,
+                    activities=activities,
                     record_shapes=True,
                 ) as profiler:
                     logits = model(input_ids, attention_mask)
@@ -249,11 +248,13 @@ def train(
 
         # Log metrics to wandb
         if use_wandb:
-            wandb.log({
-                "epoch": epoch + 1,
-                "train_loss": avg_loss,
-                "val_accuracy": val_acc,
-            })
+            wandb.log(
+                {
+                    "epoch": epoch + 1,
+                    "train_loss": avg_loss,
+                    "val_accuracy": val_acc,
+                }
+            )
 
     # Save model
     output_path = Path(cfg.paths.model_output)

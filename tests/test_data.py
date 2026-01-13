@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 import torch
+from clickbait_classifier.data import ClickbaitDataset, load_data
 
-from clickbait_classifier.data import load_data, ClickbaitDataset
 from tests import _PATH_DATA
 
 PROCESSED_DIR = Path(_PATH_DATA) / "processed"
@@ -47,6 +47,7 @@ def test_all_splits_have_correct_shapes_and_labels(split_name: str):
 
     unique_labels = torch.unique(labels).tolist()
     assert all(v in [0, 1] for v in unique_labels), f"{split_name}: labels not binary: {unique_labels}"
+
 
 @pytest.mark.skipif(not PROCESSED_DIR.exists(), reason="Processed data not found (data/processed)")
 @pytest.mark.parametrize("split_name", ["train", "val", "test"])
