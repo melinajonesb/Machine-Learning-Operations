@@ -139,7 +139,7 @@ def train(
             logger.warning(f"Failed to login to wandb: {e}")
     else:
         logger.warning("WANDB_API_KEY not found, wandb logging will be disabled")
-    
+
     if use_wandb:
         wandb.init(
             project="clickbait-classifier",
@@ -204,7 +204,7 @@ def train(
                 activities = [torch.profiler.ProfilerActivity.CPU]
                 if device == "cuda":
                     activities.append(torch.profiler.ProfilerActivity.CUDA)
-                
+
                 with torch.profiler.profile(
                     activities = activities,
                     record_shapes=True,
@@ -246,7 +246,7 @@ def train(
 
         val_acc = correct / total
         logger.info(f"Epoch {epoch + 1}/{cfg.training.epochs} - Loss: {avg_loss:.4f} - Val Acc: {val_acc:.4f}")
-        
+
         # Log metrics to wandb
         if use_wandb:
             wandb.log({
@@ -273,7 +273,7 @@ def train(
         artifact.add_file(str(config_output_path))
         wandb.log_artifact(artifact)
         logger.info("Model artifact logged to Weights & Biases")
-        
+
         # Finish wandb run
         wandb.finish()
         logger.info("Weights & Biases run completed")

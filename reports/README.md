@@ -77,7 +77,7 @@ will check the repositories and the code to verify your answers.
 
 ### Week 2
 
-- [x] Write unit tests related to the data part of your code (M16) - Kaja 
+- [x] Write unit tests related to the data part of your code (M16) - Kaja
 - [x] Write unit tests related to model construction and or model training (M16) - Kaja
 - [x] Calculate the code coverage (M16) - Kaja
 - [ ] Get some continuous integration running on the GitHub repository (M17)
@@ -356,8 +356,8 @@ DVC can also help ensure consistency across team members and environments, and r
 > _training docker image: `docker run trainer:latest lr=1e-3 batch_size=64`. Link to docker file: <weblink>_
 >
 > Answer:  In this project, we used Docker to create reproducible and isolated environments for both model training and serving an API. We created separate Docker images to clearly separate concerns and ensure that the same environment could be used across different machines and by different team members.
-One Docker image was used for training the model. This image installs all required dependencies using uv and runs the training script inside a container. 
-We also created a separate Docker image for a FastAPI-based API, which exposes a simple endpoint and can later be extended for inference. 
+One Docker image was used for training the model. This image installs all required dependencies using uv and runs the training script inside a container.
+We also created a separate Docker image for a FastAPI-based API, which exposes a simple endpoint and can later be extended for inference.
 Using Docker improved the reproducibility, reduced dependency-related issues, and it made it easier to standardize how training and API execution are performed.
 
 #husk å legge til kommandoer og link når det er klart.
@@ -377,7 +377,7 @@ Using Docker improved the reproducibility, reduced dependency-related issues, an
 > _run of our main code at some point that showed ..._
 >
 > Answer:
-When running into bugs during our experiments, we used a combination of systematic debugging and incremental testing. We used error messages and stack traces to identify where failures occurred, for example when dependencies were missing, paths were incorrect, or the Docker environment did not match the local setup. 
+When running into bugs during our experiments, we used a combination of systematic debugging and incremental testing. We used error messages and stack traces to identify where failures occurred, for example when dependencies were missing, paths were incorrect, or the Docker environment did not match the local setup.
 We also used the Git history and branches to revert or compare changes when new bugs were introduced, which made it easier to identify the source of errors.
 
 #husk å legge til profiling of code

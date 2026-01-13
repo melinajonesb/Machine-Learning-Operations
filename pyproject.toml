@@ -33,6 +33,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "coverage>=7.13.1",
+    "pre-commit>=4.5.1",
     "pytest>=9.0.2",
     "ruff>=0.14.11",
 ]
@@ -58,4 +59,3 @@ testpaths = ["tests"]
 train = "clickbait_classifier.train:app"
 preprocess = "clickbait_classifier.data:app"
 model = "clickbait_classifier.model:app"
-

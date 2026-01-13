@@ -57,7 +57,7 @@ def test_getitem_triplet_for_all_splits(split_name: str):
     input_ids, attention_mask, label = ds[0]
     assert input_ids.shape == attention_mask.shape, f"{split_name}: input_ids and attention_mask shape mismatch"
     assert int(label.item()) in [0, 1], f"{split_name}: label is not 0/1"
-    
+
 
 @pytest.mark.skipif(not RAW_CSV.exists(), reason="Raw CSV not found (data/raw/clickbait_data.csv)")
 def test_raw_clickbait_dataset_loads_and_formats_items():
