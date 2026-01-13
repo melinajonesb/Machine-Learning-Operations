@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Optional
 
@@ -84,6 +85,11 @@ def train(
     """Train the clickbait classifier."""
     # Load configuration
     cfg = _load_config(config)
+
+    # Create unique run directory with timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    run_dir = Path("models") / timestamp
+    cfg.paths.model_output = str(run_dir / "clickbait_model.pt")
 
     # Override config with CLI arguments (CLI takes precedence)
     if processed_path is not None:
