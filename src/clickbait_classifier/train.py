@@ -11,6 +11,7 @@ from loguru import logger
 from omegaconf import OmegaConf
 from torch import nn
 from torch.utils.data import DataLoader
+import torch.profiler
 
 from clickbait_classifier.data import load_data
 from clickbait_classifier.load_from_env_file import api_key
@@ -77,6 +78,8 @@ def train(
         Optional[Path],
         typer.Option("--output", "-o", help="Model output path (overrides config)"),
     ] = None,
+    profile_run: Annotated[bool, typer.Option("--profile", "-p", help="Run torch profiler")
+    ] = False,
 ) -> None:
     """Train the clickbait classifier."""
     # Load configuration
@@ -189,17 +192,38 @@ def train(
         model.train()
         total_loss = 0
 
-        for batch in train_loader:
+        for i, batch in enumerate(train_loader):
             input_ids, attention_mask, labels = batch
             input_ids = input_ids.to(device)
             attention_mask = attention_mask.to(device)
             labels = labels.to(device)
 
             optimizer.zero_grad()
-            logits = model(input_ids, attention_mask)
-            loss = criterion(logits, labels)
-            loss.backward()
-            optimizer.step()
+
+            if profile_run and i == 10 and epoch == 0:
+                activities = [torch.profiler.ProfilerActivity.CPU]
+                if device == "cuda":
+                    activities.append(torch.profiler.ProfilerActivity.CUDA)
+                
+                with torch.profiler.profile(
+                    activities = activities,
+                    record_shapes=True,
+                ) as profiler:
+                    logits = model(input_ids, attention_mask)
+                    loss = criterion(logits, labels)
+                    loss.backward()
+                    optimizer.step()
+
+                print(profiler.key_averages().table(sort_by="cpu_time_total", row_limit=10))
+
+                if device == "cuda":
+                    print(profiler.key_averages().table(sort_by="cuda_time_total", row_limit=10))
+
+            else:
+                logits = model(input_ids, attention_mask)
+                loss = criterion(logits, labels)
+                loss.backward()
+                optimizer.step()
 
             total_loss += loss.item()
 

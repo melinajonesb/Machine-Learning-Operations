@@ -27,8 +27,6 @@ Model candidates include `distilbert-base-uncased` (fast, good enough), `bert-ba
 We'll track experiments in W&B and let the results guide our final choice. The priority is getting the pipeline working end-to-end, not squeezing out the last percentage of accuracy.
 
 
-# How to run
-
 ## Docker
 
 This project uses Docker and Docker Compose to run the training and API
@@ -83,58 +81,9 @@ docker compose up api
 docker compose down
 ```
 
-## Configuration Management
+## Profiling
+Run training with profiling enabled. This profiles only the first batch of the first epoch.
 
-This project uses [Hydra](https://hydra.cc/) for hyperparameter management. All hyperparameters are defined in YAML configuration files, making experiments reproducible and easy to track.
-
-### Configuration Files
-
-The main configuration file is located at `configs/config.yaml` and contains all hyperparameters organized by category:
-
-- **model**: Model architecture parameters (model_name, num_labels, dropout)
-- **training**: Training hyperparameters (epochs, batch_size, lr, device, optimizer, loss, seed)
-- **data**: Data preprocessing parameters (paths, tokenizer settings, train/val/test splits, random_state)
-- **paths**: Output paths for models and configs
-
-### Using Configuration Files
-
-**Train with default config:**
 ```bash
-uv run train
-# or
-uv run train --config configs/config.yaml
+uv run python src/clickbait_classifier/train.py --profile
 ```
-
-**Train with custom config:**
-```bash
-uv run train --config configs/my_experiment.yaml
-```
-
-**Override config values via CLI:**
-```bash
-uv run train --config configs/config.yaml --epochs 10 --batch-size 64 --lr 1e-4
-```
-
-**Preprocess data with config:**
-```bash
-uv run preprocess --config configs/config.yaml
-```
-
-**Preprocess with CLI overrides:**
-```bash
-uv run preprocess --config configs/config.yaml --max-length 256 --train-split 0.8
-```
-
-### Config Saving
-
-When a model is saved, the complete configuration used for training is automatically saved alongside the model weights in the same directory as `config.yaml`. This ensures full reproducibility - you can always see exactly which hyperparameters were used for any trained model.
-
-### Creating New Experiments
-
-To create a new experiment configuration:
-
-1. Copy the default config: `cp configs/config.yaml configs/experiment1.yaml`
-2. Modify the hyperparameters you want to change
-3. Run training: `uv run train --config configs/experiment1.yaml`
-
-This approach keeps your experiments organized and makes it easy to compare different configurations.

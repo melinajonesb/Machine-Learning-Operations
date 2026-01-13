@@ -66,10 +66,17 @@ will check the repositories and the code to verify your answers.
 - [x] Add command line interfaces and project commands to your code where it makes sense (M9) -Poul
 - [x] Construct one or multiple docker files for your code (M10)
 - [x] Build the docker files locally and make sure they work as intended (M10)
+<<<<<<< HEAD
 - [x] Write one or multiple configurations files for your experiments (M11) -Yannick
 - [x] Used Hydra to load the configurations and manage your hyperparameters (M11) -Yannick
 - [ ] Use profiling to optimize your code (M12) -Yannick
 - [x] Use logging to log important events in your code (M14) - Yannick
+=======
+- [ ] Write one or multiple configurations files for your experiments (M11) -Yannick
+- [ ] Used Hydra to load the configurations and manage your hyperparameters (M11) -Yannick
+- [.] Use profiling to optimize your code (M12) - added profiling, but havent optimized anything
+- [ ] Use logging to log important events in your code (M14)
+>>>>>>> profiling-M13
 - [ ] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
 - [ ] Consider running a hyperparameter optimization sweep (M14)
 - [ ] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
