@@ -20,6 +20,7 @@ dependencies = [
     "invoke>=2.2.1",
     "loguru>=0.7.3",
     "pandas>=2.3.3",
+    "pytest>=9.0.2",
     "python-dotenv>=1.0.0",
     "torch>=2.9.1",
     "torch-tb-profiler>=0.4.3",
@@ -31,6 +32,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "coverage>=7.13.1",
     "pytest>=9.0.2",
     "ruff>=0.14.11",
 ]
@@ -43,7 +45,11 @@ target-version = "py313"
 select = ["E", "F", "I", "N", "W"]
 
 [tool.coverage.run]
-omit = ["tests/*"]
+omit = [
+  "tests/*",
+  "*/site-packages/*",
+  "*/_remote_module_non_scriptable.py"
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -52,3 +58,4 @@ testpaths = ["tests"]
 train = "clickbait_classifier.train:app"
 preprocess = "clickbait_classifier.data:app"
 model = "clickbait_classifier.model:app"
+
