@@ -49,10 +49,13 @@ def load_data(
 ) -> tuple[TensorDataset, TensorDataset, TensorDataset]:
     """Load preprocessed train, val, and test sets."""
     logger.info(f"Loading processed data from {processed_path}")
-    train_data = torch.load(processed_path / "train.pt")
-    val_data = torch.load(processed_path / "val.pt")
-    test_data = torch.load(processed_path / "test.pt")
-    logger.info(f"Loaded train: {train_data['input_ids'].shape[0]} samples, val: {val_data['input_ids'].shape[0]} samples, test: {test_data['input_ids'].shape[0]} samples")
+    train_data = torch.load(processed_path / "train.pt", weights_only=True)
+    val_data = torch.load(processed_path / "val.pt", weights_only=True)
+    test_data = torch.load(processed_path / "test.pt", weights_only=True)
+    logger.info(
+        f"Loaded train: {train_data['input_ids'].shape[0]} samples, val: {val_data['input_ids'].shape[0]} samples, "
+        f"test: {test_data['input_ids'].shape[0]} samples"
+    )
 
     train_set = TensorDataset(
         train_data["input_ids"],

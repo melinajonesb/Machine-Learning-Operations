@@ -6,16 +6,19 @@ WINDOWS = os.name == "nt"
 PROJECT_NAME = "clickbait_classifier"
 PYTHON_VERSION = "3.13"
 
+
 # Project commands
 @task
 def preprocess_data(ctx: Context) -> None:
     """Preprocess data."""
     ctx.run(f"uv run src/{PROJECT_NAME}/data.py data/raw data/processed", echo=True, pty=not WINDOWS)
 
+
 @task
 def train(ctx: Context) -> None:
     """Train model."""
     ctx.run(f"uv run src/{PROJECT_NAME}/train.py", echo=True, pty=not WINDOWS)
+
 
 @task
 def test(ctx: Context) -> None:
@@ -31,20 +34,23 @@ def docker_up(ctx: Context, service: str = "") -> None:
         cmd += f" {service}"
     ctx.run(cmd, echo=True, pty=not WINDOWS)
 
+
 @task
 def docker_train(ctx: Context, args: str = "") -> None:
     """Run training (optionally with Typer args)."""
     ctx.run(
-        f'docker compose run --rm --build train {args}',
+        f"docker compose run --rm --build train {args}",
         echo=True,
         pty=not WINDOWS,
     )
+
 
 # Documentation commands
 @task
 def build_docs(ctx: Context) -> None:
     """Build documentation."""
     ctx.run("uv run mkdocs build --config-file docs/mkdocs.yaml --site-dir build", echo=True, pty=not WINDOWS)
+
 
 @task
 def serve_docs(ctx: Context) -> None:

@@ -11,3 +11,4 @@ models/*.pt
 data/
 
 reports/evaluation_results.json
+.coverage
