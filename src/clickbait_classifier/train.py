@@ -233,7 +233,7 @@ def train(
         model.eval()
         correct, total = 0, 0
         with torch.no_grad():
-            for batch in tqdm(val_loader, desv="Validation", leave=False):
+            for batch in tqdm(val_loader, desc="Validation", leave=False):
                 input_ids, attention_mask, labels = batch
                 input_ids = input_ids.to(device)
                 attention_mask = attention_mask.to(device)

@@ -12,3 +12,5 @@ data/
 
 reports/evaluation_results.json
 .coverage
+
+.DS_Store
