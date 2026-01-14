@@ -1,5 +1,0 @@
-[core]
-    remote = gcs_remote
-['remote "gcs_remote"']
-    url = gs://dtumlops-clickbait-data
-    version_aware = true
