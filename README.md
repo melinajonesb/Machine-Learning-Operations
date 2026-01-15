@@ -102,5 +102,3 @@ uv run pre-commit run --all-files
 ```bash
 git commit -m"your commit message" --no-verify
 ```
-
-test
