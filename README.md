@@ -40,7 +40,7 @@ in a reproducible environment.
 
 
 
-### Commands
+# Commands
 
 ## Project Setup
 Ensure your environment is synchronized before running any tasks:
@@ -48,6 +48,15 @@ Ensure your environment is synchronized before running any tasks:
 uv sync
 ```
 
+## Pre-commit setup
+```bash
+uv run pre-commit run --all-files
+```
+
+## Run tests
+```bash
+uv run invoke test
+```
 
 ## Local development
 
@@ -62,10 +71,12 @@ uv run invoke preprocess-data
 uv run invoke train
 ```
 
-### Run tests
+### Evaluate model locally
+
 ```bash
-uv run invoke test
+uv run invoke evaluate
 ```
+
 
 ### Run AIP locally
 ```bash
@@ -95,6 +106,10 @@ docker compose up -d dev
 uv run invoke docker-train --args="--config configs/config.yaml --epochs 5"
 ```
 
+### Run evaluation in docker
+```bash
+uv run invoke docker-evaluate
+```
 
 ### Build API dockerimage
 ```bash

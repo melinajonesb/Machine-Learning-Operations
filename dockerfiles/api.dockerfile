@@ -12,7 +12,7 @@ COPY README.md README.md
 
 COPY src/ src/
 COPY models/ models/
-COPY configs/ configs/ 
+COPY configs/ configs/
 
 
 RUN --mount=type=cache,target=/root/.cache/uv \
