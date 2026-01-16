@@ -403,7 +403,13 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 17 fill here ---
+In our project we used several services from Google Cloud Platform (GCP).
+
+We used Cloud Storage to store datasets and trained model artifacts. Buckets were used both for input data and for saving model checkpoints, making the data easily accessible from different environments.
+
+We used Artifact Registry to store and manage Docker container images. These images were used both locally and when running training jobs in the cloud.
+
+We used Vertex AI (and compute engine) for scalable model training through custom jobs. Vertex AI allowed us to submit training jobs that automatically provision the required compute resources, run our Docker container, and shut down resources after completion, simplifying cloud-based experimentation.
 
 ### Question 18
 
@@ -418,7 +424,11 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 18 fill here ---
+Compute Engine was used indirectly as the underlying infrastructure for our cloud-based training. We did not run training jobs by manually creating and managing virtual machines ourselves. Instead, Compute Engine was automatically used through Vertex AI custom training jobs.
+
+When submitting a custom job in Vertex AI, Google Cloud provisions the required virtual machines using Compute Engine in the background. We specified the machine type and hardware requirements, including GPU accelerators (NVIDIA Tesla T4), through the Vertex AI job configuration. Vertex AI then handled VM creation, container execution, logging, and shutdown.
+
+This approach allowed us to benefit from Compute Engine’s scalable virtual machines without needing to manage SSH access, drivers, or lifecycle management manually. By relying on Vertex AI as an abstraction layer on top of Compute Engine, we were able to focus on model training and experimentation rather than low-level infrastructure details.
 
 ### Question 19
 
@@ -427,7 +437,6 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 19 fill here ---
 
 ### Question 20
 
@@ -436,7 +445,9 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 20 fill here ---
+![Artifact Registry showing Docker images used in the project](figures/artifact_reg.png)
+![Image digests and tags for the training container](figures/artifact_tags.png)
+
 
 ### Question 21
 
@@ -588,6 +599,8 @@ We also used the Git history and branches to revert or compare changes when new 
 > _The biggest challenges in the project was using ... tool to do ... . The reason for this was ..._
 >
 > Answer:
+
+- cloud
 
 --- question 30 fill here ---
 
