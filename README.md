@@ -102,3 +102,51 @@ uv run pre-commit run --all-files
 ```bash
 git commit -m"your commit message" --no-verify
 ```
+
+
+## Run training on Google Cloud Platform (GCP) Vertex AI
+Training on Google Cloud (Vertex AI)
+Follow these steps to train the model on Vertex AI using GPU.
+
+Prerequisites:
+Make sure you have authenticated with Google Cloud:
+gcloud auth login
+gcloud auth configure-docker europe-west1-docker.pkg.dev
+
+1. Build and Push Docker Image
+
+First, build the Docker image and push it to the cloud. Important: Change the version tag (e.g., v5, v6) for every new build.
+
+docker buildx build --platform linux/amd64 \
+  -f dockerfiles/train.dockerfile \
+  -t europe-west1-docker.pkg.dev/dtumlops-484212/container-reg/train:<YOUR_TAG> \
+  --push .
+
+  (Replace <YOUR_TAG> with your version, e.g., v6)
+
+2. Update Configuration
+
+Open configs/config_gpu.yaml and update the imageUri to match the tag you just pushed:
+
+# Example inside config_gpu.yaml
+imageUri: europe-west1-docker.pkg.dev/dtumlops-484212/container-reg/train:<YOUR_TAG>
+
+3. Start Training Job
+
+Run this command to start the training on Vertex AI. The model will be saved directly to our Google Cloud Storage bucket.
+
+gcloud ai custom-jobs create \
+  --region=europe-west1 \
+  --display-name=clickbait-train-run \
+  --config=configs/config_gpu.yaml \
+  --command=uv \
+  --args=run \
+  --args=-m \
+  --args=clickbait_classifier.train \
+  --args=--config=configs/config.yaml \
+  --args=--processed-path=/gcs/dtumlops-clickbait-data/data/processed \
+  --args=--output=/gcs/dtumlops-clickbait-data/models
+
+When the job is finished, the model (.ckpt) and the config file are automatically saved to our storage bucket.
+
+Bucket Path: gs://dtumlops-clickbait-data/models/

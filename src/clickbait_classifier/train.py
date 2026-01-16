@@ -106,6 +106,7 @@ def train(
         cfg.training.device = device
     if output is not None:
         cfg.paths.model_output = str(output)
+        run_dir = Path(output)
 
     # Set seed for reproducibility
     pl.seed_everything(cfg.training.seed)

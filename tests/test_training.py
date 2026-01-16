@@ -12,9 +12,10 @@ import clickbait_classifier.train as train_module
 
 
 class DummyModel(nn.Module):
-    def __init__(self, num_labels: int = 2):
+    def __init__(self, num_labels: int = 2, hidden_size: int = 16):
         super().__init__()
         self.config = type("cfg", (), {"hidden_size": hidden_size})()
+        self.classifier = nn.Linear(1, num_labels)
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> torch.Tensor:
         x = input_ids.float().mean(dim=1, keepdim=True)
