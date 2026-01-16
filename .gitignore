@@ -8,8 +8,6 @@ wandb/
 
 models/
 
-data/
-
 reports/evaluation_results.json
 .coverage
 
