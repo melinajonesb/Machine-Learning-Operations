@@ -85,9 +85,9 @@ will check the repositories and the code to verify your answers.
 - [x] Add pre-commit hooks to your version control setup (M18) - Kaja
 - [ ] Add a continues workflow that triggers when data changes (M19) - skipped, we don't have dvc
 - [ ] Add a continues workflow that triggers when changes to the model registry is made (M19) - Poul
-- [ ] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21) - Kaja
-- [ ] Create a trigger workflow for automatically building your docker images (M21) - Kaja
-- [ ] Get your model training in GCP using either the Engine or Vertex AI (M21) - Kaja
+- [x] Create a data storage in GCP Bucket for your data and link this with your data version control setup (M21) - Kaja - skipped the version-control part since we havent implemented dvc
+- [x] Create a trigger workflow for automatically building your docker images (M21) - Kaja
+- [x] Get your model training in GCP using either the Engine or Vertex AI (M21) - Kaja
 - [x] Create a FastAPI application that can do inference using your model (M22) - Melina
 - [ ] Deploy your model in GCP using either Functions or Run as the backend (M23)
 - [ ] Write API tests for your application and setup continues integration for these (M24) - Melina
@@ -403,7 +403,13 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 17 fill here ---
+In our project we used several services from Google Cloud Platform (GCP).
+
+We used Cloud Storage to store datasets and trained model artifacts. Buckets were used both for input data and for saving model checkpoints, making the data easily accessible from different environments.
+
+We used Artifact Registry to store and manage Docker container images. These images were used both locally and when running training jobs in the cloud.
+
+We used Vertex AI (and compute engine) for scalable model training through custom jobs. Vertex AI allowed us to submit training jobs that automatically provision the required compute resources, run our Docker container, and shut down resources after completion, simplifying cloud-based experimentation.
 
 ### Question 18
 
@@ -418,7 +424,11 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 18 fill here ---
+Compute Engine was used indirectly as the underlying infrastructure for our cloud-based training. We did not run training jobs by manually creating and managing virtual machines ourselves. Instead, Compute Engine was automatically used through Vertex AI custom training jobs.
+
+When submitting a custom job in Vertex AI, Google Cloud provisions the required virtual machines using Compute Engine in the background. We specified the machine type and hardware requirements, including GPU accelerators (NVIDIA Tesla T4), through the Vertex AI job configuration. Vertex AI then handled VM creation, container execution, logging, and shutdown.
+
+This approach allowed us to benefit from Compute Engine’s scalable virtual machines without needing to manage SSH access, drivers, or lifecycle management manually. By relying on Vertex AI as an abstraction layer on top of Compute Engine, we were able to focus on model training and experimentation rather than low-level infrastructure details.
 
 ### Question 19
 
@@ -427,7 +437,6 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 19 fill here ---
 
 ### Question 20
 
@@ -436,7 +445,9 @@ We also used the Git history and branches to revert or compare changes when new 
 >
 > Answer:
 
---- question 20 fill here ---
+![Artifact Registry showing Docker images used in the project](figures/artifact_reg.png)
+![Image digests and tags for the training container](figures/artifact_tags.png)
+
 
 ### Question 21
 
@@ -588,6 +599,8 @@ We also used the Git history and branches to revert or compare changes when new 
 > _The biggest challenges in the project was using ... tool to do ... . The reason for this was ..._
 >
 > Answer:
+
+- cloud
 
 --- question 30 fill here ---
 

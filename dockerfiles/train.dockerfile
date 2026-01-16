@@ -1,18 +1,18 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime
 
 WORKDIR /app
 ENV PYTHONPATH=/app/src
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 COPY uv.lock uv.lock
 COPY pyproject.toml pyproject.toml
 COPY README.md README.md
-
-RUN apt update && \
-    apt install --no-install-recommends -y build-essential gcc && \
-    apt clean && rm -rf /var/lib/apt/lists/*
-
-RUN uv sync --locked --no-cache --no-install-project
-
+COPY configs configs/
 COPY src src/
+
+
+RUN uv sync --frozen --no-cache
+
 
 ENTRYPOINT ["uv", "run", "-m", "clickbait_classifier.train"]
