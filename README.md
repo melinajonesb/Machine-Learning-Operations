@@ -84,8 +84,39 @@ uv run invoke dev-api
 ```
 The API health check will be available at https://www.google.com/search?q=http://127.0.0.1:8000/
 
+## Model Registry Workflow
 
+This project uses W&B Model Registry with GitHub Actions for automated model testing and promotion.
 
+### Workflow
+
+1. **Train a model:**
+```bash
+   uvr train --epochs 3
+```
+
+2. **Upload to W&B:**
+```bash
+   uv run invoke upload-model
+```
+
+3. **Review metrics** in the [W&B dashboard](https://wandb.ai/group-19/clickbait-classifier)
+
+4. **Stage the model** (triggers CI pipeline):
+```bash
+   uv run invoke stage-model
+```
+   Or add the `staging` alias manually in the W&B UI.
+
+5. **Automated testing:** GitHub Actions downloads the staged model, runs performance tests, and auto-promotes to `production` if tests pass.
+
+### Model Commands
+
+| Command | Description |
+|---------|-------------|
+| `uv run invoke upload-model` | Upload latest model checkpoint to W&B |
+| `uv run invoke stage-model` | Add staging alias to trigger CI tests |
+| `uv run invoke stage-model --artifact=clickbait-model:v2` | Stage a specific version |
 
 # Docker Compose
 

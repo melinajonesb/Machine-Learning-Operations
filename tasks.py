@@ -1,3 +1,4 @@
+import glob
 import os
 
 from invoke import Context, task
@@ -107,3 +108,44 @@ def dev(ctx: Context) -> None:
 def stop(ctx: Context) -> None:
     """Stopper alle kjørende containere."""
     ctx.run("docker compose down", echo=True)
+
+
+@task
+def upload_model(ctx: Context, path: str = "") -> None:
+    """Upload latest model to W&B. Usage: invoke upload-model"""
+    if not path:
+        models = sorted(glob.glob("models/*/clickbait_model.ckpt"))
+        if not models:
+            print("No models found")
+            return
+        path = models[-1]
+        print(f"Found model: {path}")
+
+    ctx.run(
+        f'''uv run python -c "
+import wandb
+run = wandb.init(project='clickbait-classifier', entity='group-19', job_type='upload')
+artifact = wandb.Artifact('clickbait-model', type='model')
+artifact.add_file('{path}')
+run.log_artifact(artifact)
+run.finish()
+print('Uploaded!')"''',
+        echo=True,
+        pty=not WINDOWS,
+    )
+
+
+@task
+def stage_model(ctx: Context, artifact: str = "clickbait-model:latest") -> None:
+    """Add staging alias to trigger CI pipeline. Usage: invoke stage-model"""
+    ctx.run(
+        f'''uv run python -c "
+import wandb
+api = wandb.Api()
+art = api.artifact('group-19/clickbait-classifier/{artifact}')
+art.aliases.append('staging')
+art.save()
+print(f'Staged: {{art.qualified_name}}')"''',
+        echo=True,
+        pty=not WINDOWS,
+    )
